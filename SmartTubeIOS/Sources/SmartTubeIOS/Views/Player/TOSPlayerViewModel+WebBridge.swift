@@ -355,7 +355,7 @@ extension TOSPlayerViewModel {
                 )
                 return
             }
-            guard let image = image, let data = image.pngData() else {
+            guard let image = image, let data = image.pngDataCompat() else {
                 tosLog.error("[snapshot] no image/PNG data returned")
                 completion?(false)
                 CFNotificationCenterPostNotification(
@@ -382,3 +382,18 @@ extension TOSPlayerViewModel {
     }
 }
 #endif  // !os(tvOS)
+
+#if os(macOS)
+import AppKit
+extension NSImage {
+    func pngDataCompat() -> Data? {
+        guard let tiff = tiffRepresentation, let rep = NSBitmapImageRep(data: tiff) else { return nil }
+        return rep.representation(using: .png, properties: [:])
+    }
+}
+#else
+import UIKit
+extension UIImage {
+    func pngDataCompat() -> Data? { pngData() }
+}
+#endif

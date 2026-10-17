@@ -976,9 +976,11 @@ public struct TOSPlayerView: View {
 #if os(macOS)
 private struct YouTubeWebPlayerView: NSViewRepresentable {
     let webView: WKWebView
+    let onWindowReady: (() -> Void)?
 
     func makeNSView(context: Context) -> WKWebView {
         webView.autoresizingMask = [.width, .height]
+        if let cb = onWindowReady { DispatchQueue.main.async { cb() } }
         return webView
     }
 

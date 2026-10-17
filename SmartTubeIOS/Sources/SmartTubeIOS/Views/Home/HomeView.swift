@@ -276,7 +276,7 @@ public struct HomeView: View {
             .focused($focusedSection, equals: section)
         }
         #else
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, *) {
             let label = Text(section.title)
                 .font(.subheadline.weight(.medium))
                 .padding(.horizontal, 6)
