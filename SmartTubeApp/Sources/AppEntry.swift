@@ -60,7 +60,7 @@ struct AppEntry: App {
         // methods know to skip Crashlytics.crashlytics() instead of hitting the fatal
         // "default app not configured" error.
         let settingsStore = SettingsStore()
-        CrashlyticsLogger.isEnabled = !settingsStore.settings.disableAnalytics
+        CrashlyticsLogger.isEnabled = false  // sideload: no Firebase plist
         if CrashlyticsLogger.isEnabled {
             FirebaseApp.configure()
         }

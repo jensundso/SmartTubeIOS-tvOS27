@@ -31,7 +31,11 @@ extension View {
             self.buttonStyle(PickerHeaderButtonStyle())
         }
         #else
-        self.buttonStyle(PickerHeaderButtonStyle())
+        if #available(iOS 26.0, *) {
+            self.buttonStyle(.glass)
+        } else {
+            self.buttonStyle(.plain)
+        }
         #endif
     }
 
@@ -52,16 +56,12 @@ extension View {
     @ViewBuilder
     func playerGlassSurface(cornerRadius: CGFloat = 16) -> some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-        #if os(tvOS)
-        if #available(tvOS 26.0, *) {
+        if #available(tvOS 26.0, iOS 26.0, *) {
             self.glassEffect(.regular, in: shape)
                 .clipShape(shape)
         } else {
             self.background(.regularMaterial).clipShape(shape)
         }
-        #else
-        self.background(.regularMaterial).clipShape(shape)
-        #endif
     }
 }
 

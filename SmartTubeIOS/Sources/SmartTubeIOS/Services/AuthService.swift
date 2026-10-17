@@ -138,6 +138,12 @@ public final class AuthService {
             authLog.notice("beginSignIn() — already in progress, ignoring duplicate call")
             return
         }
+        // Reuse a still-valid code (e.g. SignInView re-appearing after the user came back
+        // from the browser) instead of resetting the sheet and invalidating the code.
+        if let pending = pendingActivation, pending.expiresAt > Date(), pollTask != nil, error == nil {
+            handleForeground()
+            return
+        }
         isSigningIn = true
         defer { isSigningIn = false }
         pollTask?.cancel()

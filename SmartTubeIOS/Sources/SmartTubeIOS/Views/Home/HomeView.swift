@@ -276,24 +276,38 @@ public struct HomeView: View {
             .focused($focusedSection, equals: section)
         }
         #else
-        Button(action: action) {
-            Text(section.title)
+        if #available(iOS 26.0, *) {
+            let label = Text(section.title)
                 .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
-                .background(
-                    isSelected ? Color.primary : Color.secondary.opacity(0.15),
-                    in: Capsule()
-                )
-                .foregroundStyle(
-                    isSelected
-                        ? Color(white: colorScheme == .dark ? 0 : 1)
-                        : Color.primary
-                )
+                .padding(.horizontal, 6)
+            if isSelected {
+                Button(action: action) { label }
+                    .buttonStyle(.glassProminent)
+                    .accessibilityAddTraits([.isSelected])
+            } else {
+                Button(action: action) { label }
+                    .buttonStyle(.glass)
+            }
+        } else {
+            Button(action: action) {
+                Text(section.title)
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(
+                        isSelected ? Color.primary : Color.secondary.opacity(0.15),
+                        in: Capsule()
+                    )
+                    .foregroundStyle(
+                        isSelected
+                            ? Color(white: colorScheme == .dark ? 0 : 1)
+                            : Color.primary
+                    )
+            }
+            .buttonStyle(.plain)
+            .animation(.easeInOut(duration: 0.15), value: selectedSection)
+            .accessibilityAddTraits(isSelected ? [.isSelected] : [])
         }
-        .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.15), value: selectedSection)
-        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
         #endif
     }
 

@@ -1,6 +1,6 @@
 # SmartTube
 
-> **Unofficial, vibe-coded fork:** modified by [@jensundso](https://github.com/jensundso) on 17 October 2026, based on [milika/SmartTubeIOS](https://github.com/milika/SmartTubeIOS). This fork focuses on an Apple TV / tvOS 27 interface refresh and is not an official release or affiliated with the upstream author, Apple, Google, or YouTube. It remains under GPL-3.0; see [LICENSE](LICENSE). The App Store badge below links to the upstream app.
+> **Unofficial, vibe-coded fork:** modified by [@jensundso](https://github.com/jensundso) on 17 October 2026, based on [milika/SmartTubeIOS](https://github.com/milika/SmartTubeIOS). This fork focuses on Apple TV / tvOS 27 and iPhone / iOS 27 interface refreshes (Liquid Glass) and is not an official release or affiliated with the upstream author, Apple, Google, or YouTube. It remains under GPL-3.0; see [LICENSE](LICENSE). The App Store badge below links to the upstream app.
 >
 > **Testing:** tested only on Apple TV 4K (3rd generation) running tvOS 27. No other Apple TV models, tvOS versions, iPhone, iPad, or Mac have been tested.
 
@@ -68,7 +68,7 @@ Inspired by the original [SmartTube Android app](https://github.com/yuliskov/Sma
 - Comments, Stats for Nerds
 
 ### Platforms
-- **iPhone & iPad** — iOS 17+
+- **iPhone & iPad** — iOS 17+; Liquid Glass chips and player menus on iOS 26+; tested on iPhone with iOS 27.0.0.1
 - **macOS** — Mac Catalyst, macOS 14+ (Sonoma)
 - **Apple TV** — tvOS 17.6+, full Siri Remote / d-pad navigation; Liquid Glass controls on tvOS 26+
 
