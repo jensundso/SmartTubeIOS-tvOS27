@@ -2,6 +2,43 @@ import AuthenticationServices
 import SmartTubeIOSCore
 import SwiftUI
 
+private struct SettingsPicker<SelectionValue: Hashable, Label: View, Content: View>: View {
+    @Binding var selection: SelectionValue
+    let label: Label
+    private let content: () -> Content
+
+    init(
+        selection: Binding<SelectionValue>,
+        @ViewBuilder label: () -> Label,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        _selection = selection
+        self.label = label()
+        self.content = content
+    }
+
+    init(
+        _ title: LocalizedStringKey,
+        selection: Binding<SelectionValue>,
+        @ViewBuilder content: @escaping () -> Content
+    ) where Label == Text {
+        self.init(selection: selection, label: { Text(title) }, content: content)
+    }
+
+    var body: some View {
+        #if os(tvOS)
+        LabeledContent {
+            Picker("", selection: $selection, content: content)
+                .labelsHidden()
+        } label: {
+            label
+        }
+        #else
+        Picker(selection: $selection, label: label, content: content)
+        #endif
+    }
+}
+
 // MARK: - SettingsView
 //
 // App preferences.  Mirrors the Android settings presenters
@@ -54,6 +91,9 @@ public struct SettingsView: View {
         }
         #if os(macOS)
         .formStyle(.grouped)
+        #endif
+        #if os(tvOS)
+        .pickerStyle(.menu)
         #endif
         // Hide the blank navigation bar on iOS and tvOS — a visible nav bar on tvOS
         // conflicts with the TabView tab bar scroll-hide animation (issue #102 / gh-34).
@@ -131,21 +171,21 @@ public struct SettingsView: View {
     private var playerSection: some View {
         @Bindable var store = store
         return Section("Player") {
-            Picker("Playback Speed", selection: $store.settings.playbackSpeed) {
+            SettingsPicker("Playback Speed", selection: $store.settings.playbackSpeed) {
                 ForEach(AppSettings.availableSpeeds, id: \.self) { s in
                     Text(s == 1.0 ? "Normal" : "\(s, specifier: "%.2g")×").tag(s)
                 }
             }
 
             #if !os(iOS)
-            Picker("Default Quality", selection: $store.settings.preferredQuality) {
+            SettingsPicker("Default Quality", selection: $store.settings.preferredQuality) {
                 ForEach(AppSettings.VideoQuality.allCases, id: \.self) { q in
                     Text(q.rawValue.capitalized).tag(q)
                 }
             }
             .accessibilityIdentifier("settings.preferredQualityPicker")
 
-            Picker("Preferred Audio Language", selection: $store.settings.preferredAudioLanguage) {
+            SettingsPicker("Preferred Audio Language", selection: $store.settings.preferredAudioLanguage) {
                 Text("System Default").tag(nil as String?)
                 Divider()
                 Text("English").tag("en" as String?)
@@ -163,13 +203,13 @@ public struct SettingsView: View {
             #endif
 
             #if os(tvOS)
-            Picker("Seek Back", selection: $store.settings.seekBackSeconds) {
+            SettingsPicker("Seek Back", selection: $store.settings.seekBackSeconds) {
                 ForEach(AppSettings.availableSeekOptions, id: \.self) { s in
                     Text("\(s) s").tag(s)
                 }
             }
             .accessibilityIdentifier("settings.seekBackRow")
-            Picker("Seek Forward", selection: $store.settings.seekForwardSeconds) {
+            SettingsPicker("Seek Forward", selection: $store.settings.seekForwardSeconds) {
                 ForEach(AppSettings.availableSeekOptions, id: \.self) { s in
                     Text("\(s) s").tag(s)
                 }
@@ -193,7 +233,7 @@ public struct SettingsView: View {
             #endif
 
             #if !os(iOS)
-            Picker("Hide Controls After", selection: $store.settings.controlsHideTimeout) {
+            SettingsPicker("Hide Controls After", selection: $store.settings.controlsHideTimeout) {
                 Text("2s").tag(2)
                 Text("3s").tag(3)
                 Text("4s").tag(4)
@@ -202,7 +242,7 @@ public struct SettingsView: View {
                 Text("10s").tag(10)
             }
 
-            Picker("Video Fit", selection: $store.settings.videoGravityMode) {
+            SettingsPicker("Video Fit", selection: $store.settings.videoGravityMode) {
                 Text("Fit (letterbox)").tag(AppSettings.VideoGravityMode.fit)
                 Text("Fill (crop)").tag(AppSettings.VideoGravityMode.fill)
             }
@@ -225,7 +265,7 @@ public struct SettingsView: View {
     private var generalSection: some View {
         @Bindable var store = store
         return Section {
-            Picker("Watch History", selection: $store.settings.historyState) {
+            SettingsPicker("Watch History", selection: $store.settings.historyState) {
                 Text("Enabled").tag(AppSettings.HistoryState.enabled)
                 Text("Disabled").tag(AppSettings.HistoryState.disabled)
             }
@@ -269,13 +309,13 @@ public struct SettingsView: View {
     private var uiSection: some View {
         @Bindable var store = store
         return Section("Interface") {
-            Picker("Theme", selection: $store.settings.themeName) {
+            SettingsPicker("Theme", selection: $store.settings.themeName) {
                 ForEach(AppSettings.ThemeName.allCases, id: \.self) { t in
                     Text(t.rawValue).tag(t)
                 }
             }
             .accessibilityIdentifier("settings.themeRow")
-            Picker("Accent Color", selection: $store.settings.accentColor) {
+            SettingsPicker("Accent Color", selection: $store.settings.accentColor) {
                 ForEach(AppSettings.AccentColorChoice.allCases, id: \.self) { choice in
                     Label {
                         Text(choice.displayName)
@@ -286,19 +326,19 @@ public struct SettingsView: View {
                 }
             }
             .accessibilityIdentifier("settings.accentColorPicker")
-            Picker("Thumbnails", selection: thumbnailStyle) {
+            SettingsPicker("Thumbnails", selection: thumbnailStyle) {
                 Text("Standard").tag(ThumbnailStyle.standard)
                 Text("High Resolution").tag(ThumbnailStyle.highResolution)
                 Text("Compact").tag(ThumbnailStyle.compact)
             }
             .accessibilityIdentifier("settings.thumbnailStylePicker")
             #if !os(tvOS)
-            Picker("Columns (Portrait)", selection: $store.settings.gridColumnsPortrait) {
+            SettingsPicker("Columns (Portrait)", selection: $store.settings.gridColumnsPortrait) {
                 ForEach(AppSettings.availableGridColumnCounts, id: \.self) { Text("\($0)").tag($0) }
             }
             .disabled(store.settings.compactThumbnails)
             .accessibilityIdentifier("settings.gridColumnsPortraitPicker")
-            Picker("Columns (Landscape)", selection: $store.settings.gridColumnsLandscape) {
+            SettingsPicker("Columns (Landscape)", selection: $store.settings.gridColumnsLandscape) {
                 ForEach(AppSettings.availableGridColumnCounts, id: \.self) { Text("\($0)").tag($0) }
             }
             .disabled(store.settings.compactThumbnails)
@@ -317,7 +357,7 @@ public struct SettingsView: View {
             if store.settings.hideWatchedVideos {
                 #if os(tvOS)
                 // tvOS has no Stepper.
-                Picker("Watched threshold", selection: $store.settings.hideWatchedThreshold) {
+                SettingsPicker("Watched threshold", selection: $store.settings.hideWatchedThreshold) {
                     ForEach(Array(stride(from: 50, through: 100, by: 5)), id: \.self) { percent in
                         Text("\(percent)%").tag(Double(percent) / 100)
                     }
@@ -355,27 +395,28 @@ public struct SettingsView: View {
 
             if store.settings.sponsorBlockEnabled {
                 ForEach(SponsorSegment.Category.allCases, id: \.self) { cat in
-                    HStack {
-                        Circle()
-                            .fill(cat.color)
-                            .frame(width: 10, height: 10)
-                        Picker(
-                            cat.displayName,
-                            selection: Binding(
-                                get: { store.settings.sponsorBlockActions[cat] ?? .nothing },
-                                set: { store.settings.sponsorBlockActions[cat] = $0 }
-                            )
-                        ) {
+                    SettingsPicker(
+                        selection: Binding(
+                            get: { store.settings.sponsorBlockActions[cat] ?? .nothing },
+                            set: { store.settings.sponsorBlockActions[cat] = $0 }
+                        ),
+                        label: {
+                            HStack(spacing: 12) {
+                                Circle().fill(cat.color).frame(width: 10, height: 10)
+                                Text(cat.displayName)
+                            }
+                        },
+                        content: {
                             Text("Skip").tag(AppSettings.SponsorBlockAction.skip)
                             Text("Show Toast").tag(AppSettings.SponsorBlockAction.showToast)
                             Text("Nothing").tag(AppSettings.SponsorBlockAction.nothing)
                         }
-                        .accessibilityIdentifier("settings.sponsorBlock.\(cat.rawValue)")
-                    }
+                    )
+                    .accessibilityIdentifier("settings.sponsorBlock.\(cat.rawValue)")
                 }
 
                 // Minimum segment duration
-                Picker("Min. Segment Length", selection: $store.settings.sponsorBlockMinSegmentDuration) {
+                SettingsPicker("Min. Segment Length", selection: $store.settings.sponsorBlockMinSegmentDuration) {
                     Text("Off").tag(0.0)
                     Text("1s").tag(1.0)
                     Text("2s").tag(2.0)
@@ -565,7 +606,11 @@ struct SectionsSettingsView: View {
                             Image(systemName: "minus.circle.fill")
                                 .foregroundStyle(.red)
                         }
+                        #if os(tvOS)
+                        .buttonStyle(.borderless)
+                        #else
                         .buttonStyle(.plain)
+                        #endif
                         .disabled(store.settings.enabledSections.count <= 1)
                     }
                 }
@@ -591,7 +636,11 @@ struct SectionsSettingsView: View {
                                 Image(systemName: "plus.circle.fill").foregroundStyle(.green)
                             }
                         }
+                        #if os(tvOS)
+                        .buttonStyle(.borderless)
+                        #else
                         .buttonStyle(.plain)
+                        #endif
                     }
                 }
             }

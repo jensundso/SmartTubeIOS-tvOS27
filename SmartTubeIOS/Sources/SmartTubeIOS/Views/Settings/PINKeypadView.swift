@@ -82,6 +82,31 @@ struct PINKeypadView: View {
         case nil:
             Color.clear.frame(width: 64, height: 64)
         case -1:
+            #if os(tvOS)
+            if #available(tvOS 26.0, *) {
+                Button {
+                    guard !digits.isEmpty else { return }
+                    digits.removeLast()
+                } label: {
+                    Image(systemName: "delete.left")
+                        .font(.title2)
+                        .frame(width: 64, height: 64)
+                }
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .accessibilityIdentifier("pinKeypad.delete")
+            } else {
+                Button {
+                    guard !digits.isEmpty else { return }
+                    digits.removeLast()
+                } label: {
+                    Image(systemName: "delete.left")
+                        .font(.title2)
+                        .frame(width: 64, height: 64)
+                }
+                .accessibilityIdentifier("pinKeypad.delete")
+            }
+            #else
             Button {
                 guard !digits.isEmpty else { return }
                 digits.removeLast()
@@ -91,7 +116,32 @@ struct PINKeypadView: View {
                     .frame(width: 64, height: 64)
             }
             .accessibilityIdentifier("pinKeypad.delete")
+            #endif
         case .some(let digit):
+            #if os(tvOS)
+            if #available(tvOS 26.0, *) {
+                Button {
+                    appendDigit(digit)
+                } label: {
+                    Text("\(digit)")
+                        .font(.title2)
+                        .frame(width: 64, height: 64)
+                }
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .accessibilityIdentifier("pinKeypad.digit\(digit)")
+            } else {
+                Button {
+                    appendDigit(digit)
+                } label: {
+                    Text("\(digit)")
+                        .font(.title2)
+                        .frame(width: 64, height: 64)
+                        .background(Circle().fill(.secondary.opacity(0.15)))
+                }
+                .accessibilityIdentifier("pinKeypad.digit\(digit)")
+            }
+            #else
             Button {
                 appendDigit(digit)
             } label: {
@@ -101,6 +151,7 @@ struct PINKeypadView: View {
                     .background(Circle().fill(.secondary.opacity(0.15)))
             }
             .accessibilityIdentifier("pinKeypad.digit\(digit)")
+            #endif
         }
     }
 

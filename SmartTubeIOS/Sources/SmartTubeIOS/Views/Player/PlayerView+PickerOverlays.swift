@@ -35,7 +35,7 @@ extension PlayerView {
                 HStack {
                     Button("Cancel") { showQualityPicker = false }
                         #if os(tvOS)
-                    .buttonStyle(PickerHeaderButtonStyle())
+                    .playerPickerHeaderButtonStyle()
                         #endif
                         .padding()
                     Spacer()
@@ -67,7 +67,7 @@ extension PlayerView {
                             .padding(.horizontal)
                             .padding(.vertical, 12)
                         }
-                        .buttonStyle(.plain)
+                        .playerMenuButtonStyle()
                         #if os(tvOS)
                         .prefersDefaultFocus(in: qualityPickerNamespace)
                         #endif
@@ -99,7 +99,7 @@ extension PlayerView {
                                 .padding(.horizontal)
                                 .padding(.vertical, 12)
                             }
-                            .buttonStyle(.plain)
+                            .playerMenuButtonStyle()
                             // Explicit accessibility label keeps XCTest queries like
                             // `label BEGINSWITH "720p"` working even when the button HStack
                             // contains multiple Text views (e.g. the codec short label).
@@ -115,8 +115,7 @@ extension PlayerView {
                 #endif
             }
             .frame(maxWidth: moreMenuPortraitWidth)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .playerGlassSurface()
             .accessibilityIdentifier("player.qualityPicker")
             .task {
                 // Fix 2A: pre-warm all quality tiers the moment the picker opens so that
@@ -147,7 +146,7 @@ extension PlayerView {
                 HStack {
                     Button("Cancel") { showSpeedPicker = false }
                         #if os(tvOS)
-                    .buttonStyle(PickerHeaderButtonStyle())
+                    .playerPickerHeaderButtonStyle()
                         #endif
                         .padding()
                     Spacer()
@@ -178,7 +177,7 @@ extension PlayerView {
                                 .padding(.horizontal)
                                 .padding(.vertical, 12)
                             }
-                            .buttonStyle(.plain)
+                            .playerMenuButtonStyle()
                             Divider()
                         }
                     }
@@ -190,8 +189,7 @@ extension PlayerView {
                 #endif
             }
             .frame(maxWidth: moreMenuPortraitWidth)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .playerGlassSurface()
             .accessibilityIdentifier("player.speedPicker")
             #if os(tvOS)
             .focusScope(speedPickerNamespace)
@@ -217,7 +215,7 @@ extension PlayerView {
                 HStack {
                     Button("Cancel") { showSleepTimerPicker = false }
                         #if os(tvOS)
-                    .buttonStyle(PickerHeaderButtonStyle())
+                    .playerPickerHeaderButtonStyle()
                         #endif
                         .padding()
                     Spacer()
@@ -245,7 +243,7 @@ extension PlayerView {
                         .padding(.horizontal)
                         .padding(.vertical, 12)
                     }
-                    .buttonStyle(.plain)
+                    .playerMenuButtonStyle()
                     #if os(tvOS)
                     .prefersDefaultFocus(in: sleepTimerNamespace)
                     .focused($sleepTimerPickerFocused)
@@ -269,15 +267,14 @@ extension PlayerView {
                             .padding(.horizontal)
                             .padding(.vertical, 12)
                         }
-                        .buttonStyle(.plain)
+                        .playerMenuButtonStyle()
                         Divider()
                     }
                 }
                 .frame(maxHeight: 320)
             }
             .frame(maxWidth: moreMenuPortraitWidth)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .playerGlassSurface()
             .accessibilityIdentifier("player.sleepTimerPicker")
             #if os(tvOS)
             .focusScope(sleepTimerNamespace)
@@ -303,7 +300,7 @@ extension PlayerView {
                 HStack {
                     Button("Cancel") { showCaptionPicker = false }
                         #if os(tvOS)
-                    .buttonStyle(PickerHeaderButtonStyle())
+                    .playerPickerHeaderButtonStyle()
                         #endif
                         .padding()
                     Spacer()
@@ -333,7 +330,7 @@ extension PlayerView {
                             .padding(.horizontal)
                             .padding(.vertical, 12)
                         }
-                        .buttonStyle(.plain)
+                        .playerMenuButtonStyle()
                         .accessibilityIdentifier("player.captionPicker.off")
                         #if os(tvOS)
                         .prefersDefaultFocus(in: captionPickerNamespace)
@@ -364,7 +361,7 @@ extension PlayerView {
                                 .padding(.horizontal)
                                 .padding(.vertical, 12)
                             }
-                            .buttonStyle(.plain)
+                            .playerMenuButtonStyle()
                             .accessibilityIdentifier("player.captionPicker.track.\(track.id)")
                             Divider()
                         }
@@ -376,8 +373,7 @@ extension PlayerView {
                 #endif
             }
             .frame(maxWidth: moreMenuPortraitWidth)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .playerGlassSurface()
             .accessibilityIdentifier("player.captionPicker")
             #if os(tvOS)
             .focusScope(captionPickerNamespace)
@@ -400,7 +396,7 @@ extension PlayerView {
                 HStack {
                     Button("Cancel") { showAudioTrackPicker = false }
                         #if os(tvOS)
-                    .buttonStyle(PickerHeaderButtonStyle())
+                    .playerPickerHeaderButtonStyle()
                         #endif
                         .padding()
                     Spacer()
@@ -430,7 +426,7 @@ extension PlayerView {
                             .padding(.horizontal)
                             .padding(.vertical, 12)
                         }
-                        .buttonStyle(.plain)
+                        .playerMenuButtonStyle()
                         .accessibilityIdentifier("player.audioTrackPicker.auto")
                         #if os(tvOS)
                         .prefersDefaultFocus(in: audioTrackPickerNamespace)
@@ -461,7 +457,7 @@ extension PlayerView {
                                 .padding(.horizontal)
                                 .padding(.vertical, 12)
                             }
-                            .buttonStyle(.plain)
+                            .playerMenuButtonStyle()
                             .accessibilityIdentifier("player.audioTrackPicker.track.\(track.id)")
                             Divider()
                         }
@@ -473,8 +469,7 @@ extension PlayerView {
                 #endif
             }
             .frame(maxWidth: moreMenuPortraitWidth)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .playerGlassSurface()
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("player.audioTrackPicker")
             #if os(tvOS)

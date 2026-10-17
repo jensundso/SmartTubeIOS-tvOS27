@@ -27,7 +27,7 @@ struct SmartTubeTVApp: App {
         // #92: see AppEntry.swift's init() for why order matters here — settingsStore
         // must exist before deciding whether to configure Firebase at all.
         let settingsStore = SettingsStore()
-        CrashlyticsLogger.isEnabled = !settingsStore.settings.disableAnalytics
+        CrashlyticsLogger.isEnabled = false  // sideload: no Firebase plist
         if CrashlyticsLogger.isEnabled {
             FirebaseApp.configure()
         }

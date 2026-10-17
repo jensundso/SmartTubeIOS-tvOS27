@@ -169,18 +169,13 @@ public struct HomeView: View {
 
     private var chipBar: some View {
         #if os(tvOS)
-        HStack(spacing: 8) {
-            ForEach(visibleSections) { section in
-                chipButton(section: section)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(.ultraThinMaterial)
-        .focusSection()
-        .defaultFocus($focusedSection, selectedSection)
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("home.chipBar")
+        tvChipRow
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .focusSection()
+            .defaultFocus($focusedSection, selectedSection)
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("home.chipBar")
         #else
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
@@ -202,6 +197,18 @@ public struct HomeView: View {
         #endif
     }
 
+    #if os(tvOS)
+    @ViewBuilder
+    private var tvChipRow: some View {
+        HStack(spacing: 10) {
+            ForEach(visibleSections) { section in
+                chipButton(section: section)
+            }
+        }
+    }
+    #endif
+
+    @ViewBuilder
     private func chipButton(section: BrowseSection) -> some View {
         let isSelected = selectedSection == section
         let action = {
@@ -217,32 +224,59 @@ public struct HomeView: View {
         }
         #if os(tvOS)
         let isFocused = focusedSection == section
-        return Button(action: action) {
-            Text(section.title)
-                .font(.headline)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(
-                    (isSelected || isFocused) ? Color.primary : Color.secondary.opacity(0.15),
-                    in: Capsule()
-                )
-                .foregroundStyle(
-                    (isSelected || isFocused)
-                        ? Color(white: colorScheme == .dark ? 0 : 1)
-                        : Color.primary
-                )
-                .focusEffectDisabled()
+        if #available(tvOS 26.0, *) {
+            if isSelected {
+                Button(action: action) {
+                    Text(section.title)
+                        .font(.headline)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.glassProminent)
+                .accessibilityAddTraits([.isSelected])
+                .accessibilityLabel(section.title)
+                .accessibilityIdentifier("chip.\(section.title)")
+                .focused($focusedSection, equals: section)
+            } else {
+                Button(action: action) {
+                    Text(section.title)
+                        .font(.headline)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.glass)
+                .accessibilityLabel(section.title)
+                .accessibilityIdentifier("chip.\(section.title)")
+                .focused($focusedSection, equals: section)
+            }
+        } else {
+            Button(action: action) {
+                Text(section.title)
+                    .font(.headline)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(
+                        (isSelected || isFocused) ? Color.primary : Color.secondary.opacity(0.15),
+                        in: Capsule()
+                    )
+                    .foregroundStyle(
+                        (isSelected || isFocused)
+                            ? Color(white: colorScheme == .dark ? 0 : 1)
+                            : Color.primary
+                    )
+                    .focusEffectDisabled()
+            }
+            .buttonStyle(.borderless)
+            .scaleEffect(isFocused ? 1.12 : 1.0)
+            .animation(.spring(response: 0.32, dampingFraction: 0.78), value: focusedSection)
+            .animation(.easeInOut(duration: 0.15), value: selectedSection)
+            .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+            .accessibilityLabel(section.title)
+            .accessibilityIdentifier("chip.\(section.title)")
+            .focused($focusedSection, equals: section)
         }
-        .buttonStyle(.borderless)
-        .scaleEffect(isFocused ? 1.12 : 1.0)
-        .animation(.easeInOut(duration: 0.15), value: focusedSection)
-        .animation(.easeInOut(duration: 0.15), value: selectedSection)
-        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
-        .accessibilityLabel(section.title)
-        .accessibilityIdentifier("chip.\(section.title)")
-        .focused($focusedSection, equals: section)
         #else
-        return Button(action: action) {
+        Button(action: action) {
             Text(section.title)
                 .font(.subheadline.weight(.medium))
                 .padding(.horizontal, 14)

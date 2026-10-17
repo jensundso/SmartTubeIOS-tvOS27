@@ -43,7 +43,22 @@ struct PlayerControlsOverlay: View {
     #endif
     @Environment(SettingsStore.self) var store
     @Environment(\.dismiss) var dismiss
+    @ViewBuilder
     var body: some View {
+        #if os(tvOS)
+        if #available(tvOS 26.0, *) {
+            GlassEffectContainer(spacing: 12) {
+                controlsContent
+            }
+        } else {
+            controlsContent
+        }
+        #else
+        controlsContent
+        #endif
+    }
+
+    private var controlsContent: some View {
         VStack {
             // Top bar: back + title
             HStack {
@@ -442,7 +457,8 @@ struct PlayerControlsOverlay: View {
 extension PlayerControlsOverlay {
 
     #if os(tvOS)
-    /// The outer player routes remote input; labels avoid tvOS 26's forced Liquid Glass button chrome.
+    /// The outer player routes remote input; this applies matching glass to its custom focus state.
+    @ViewBuilder
     func tvOverlayControl<Content: View>(
         highlighted: Bool,
         scale: CGFloat,
@@ -454,15 +470,25 @@ extension PlayerControlsOverlay {
         height: CGFloat? = nil,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        content()
-            .frame(width: width, height: height)
-            .scaleEffect(highlighted ? scale : 1)
-            .shadow(color: highlighted ? .white.opacity(shadowOpacity) : .clear, radius: shadowRadius)
-            .animation(.easeInOut(duration: 0.15), value: highlighted)
-            .disabled(!enabled)
-            .accessibilityElement()
-            .accessibilityAddTraits(.isButton)
-            .accessibilityIdentifier(identifier)
+        Group {
+            if #available(tvOS 26.0, *) {
+                content()
+                    .frame(width: width, height: height)
+                    .glassEffect(.regular.interactive(highlighted), in: Capsule())
+                    .scaleEffect(highlighted ? 1.12 : 1)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.76), value: highlighted)
+            } else {
+                content()
+                    .frame(width: width, height: height)
+                    .scaleEffect(highlighted ? scale : 1)
+                    .shadow(color: highlighted ? .white.opacity(shadowOpacity) : .clear, radius: shadowRadius)
+                    .animation(.easeInOut(duration: 0.15), value: highlighted)
+            }
+        }
+        .disabled(!enabled)
+        .accessibilityElement()
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier(identifier)
     }
     #endif
 

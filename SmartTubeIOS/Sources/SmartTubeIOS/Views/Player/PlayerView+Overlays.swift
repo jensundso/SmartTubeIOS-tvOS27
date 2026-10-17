@@ -8,6 +8,63 @@ import UIKit
 
 private let menuLog = CrashlyticsLogger(category: "PlayerMenu")
 
+extension View {
+    @ViewBuilder
+    func playerMenuButtonStyle() -> some View {
+        #if os(tvOS)
+        if #available(tvOS 26.0, *) {
+            self.buttonStyle(.borderless)
+        } else {
+            self.buttonStyle(.plain)
+        }
+        #else
+        self.buttonStyle(.plain)
+        #endif
+    }
+
+    @ViewBuilder
+    func playerPickerHeaderButtonStyle() -> some View {
+        #if os(tvOS)
+        if #available(tvOS 26.0, *) {
+            self.buttonStyle(.glass)
+        } else {
+            self.buttonStyle(PickerHeaderButtonStyle())
+        }
+        #else
+        self.buttonStyle(PickerHeaderButtonStyle())
+        #endif
+    }
+
+    @ViewBuilder
+    func playerMenuFocusHighlight(_ focused: Bool) -> some View {
+        #if os(tvOS)
+        if #available(tvOS 26.0, *) {
+            self
+        } else {
+            self.background(focused ? Color.gray.opacity(0.35) : .clear)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        #else
+        self
+        #endif
+    }
+
+    @ViewBuilder
+    func playerGlassSurface(cornerRadius: CGFloat = 16) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        #if os(tvOS)
+        if #available(tvOS 26.0, *) {
+            self.glassEffect(.regular, in: shape)
+                .clipShape(shape)
+        } else {
+            self.background(.regularMaterial).clipShape(shape)
+        }
+        #else
+        self.background(.regularMaterial).clipShape(shape)
+        #endif
+    }
+}
+
 // Measures the natural height of moreMenuItems so the sheet hugs its content
 // instead of always expanding to moreMenuMaxHeight.
 private struct MoreMenuContentHeightKey: PreferenceKey {
@@ -117,8 +174,7 @@ extension PlayerView {
                     )
             }
             .accessibilityIdentifier("player.moreMenu.scrollView")
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .playerGlassSurface()
             .onPreferenceChange(MoreMenuContentHeightKey.self) { moreMenuContentHeight = $0 }
             // Height = natural content height capped at moreMenuMaxHeight.
             // Falls back to moreMenuMaxHeight on the first render (before the
@@ -243,7 +299,7 @@ extension PlayerView {
                             .font(.system(size: 16, weight: .semibold))
                             .padding(12)
                     }
-                    .buttonStyle(.plain)
+                    .playerMenuButtonStyle()
                     Spacer()
                     Text("Description")
                         .fontWeight(.semibold)
@@ -275,8 +331,7 @@ extension PlayerView {
                 }
                 .frame(maxHeight: 400)
             }
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .playerGlassSurface()
             #if os(tvOS)
             .focusScope(descriptionOverlayNamespace)
             .onExitCommand { showDescriptionSheet = false }
@@ -363,12 +418,11 @@ extension PlayerView {
             .padding()
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         .accessibilityIdentifier("player.moreMenu.speedRow")
         #if os(tvOS)
-        .background(moreMenuFocusedRow == .speed ? Color.gray.opacity(0.35) : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .playerMenuFocusHighlight(moreMenuFocusedRow == .speed)
         .focused($moreMenuFocusedRow, equals: .speed)
         .prefersDefaultFocus(in: moreMenuNamespace)
         #endif
@@ -395,11 +449,10 @@ extension PlayerView {
                 .padding()
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .playerMenuButtonStyle()
             .foregroundStyle(.primary)
             .accessibilityIdentifier("player.moreMenu.qualityRow")
-            .background(moreMenuFocusedRow == .quality ? Color.gray.opacity(0.35) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .playerMenuFocusHighlight(moreMenuFocusedRow == .quality)
             .focused($moreMenuFocusedRow, equals: .quality)
             Divider()
         }
@@ -431,11 +484,10 @@ extension PlayerView {
                     .foregroundStyle(vm.likeStatus == .like ? Color.accentColor : .primary)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .playerMenuButtonStyle()
                 .accessibilityIdentifier("player.moreMenu.likeRow")
                 #if os(tvOS)
-                .background(moreMenuFocusedRow == .like ? Color.gray.opacity(0.35) : .clear)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .playerMenuFocusHighlight(moreMenuFocusedRow == .like)
                 .focused($moreMenuFocusedRow, equals: .like)
                 #endif
                 Divider().frame(height: 44)
@@ -453,11 +505,10 @@ extension PlayerView {
                     .foregroundStyle(vm.likeStatus == .dislike ? Color.accentColor : .primary)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .playerMenuButtonStyle()
                 .accessibilityIdentifier("player.moreMenu.dislikeRow")
                 #if os(tvOS)
-                .background(moreMenuFocusedRow == .dislike ? Color.gray.opacity(0.35) : .clear)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .playerMenuFocusHighlight(moreMenuFocusedRow == .dislike)
                 .focused($moreMenuFocusedRow, equals: .dislike)
                 #endif
             }
@@ -478,7 +529,7 @@ extension PlayerView {
                 .padding()
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         Divider()
         #endif
@@ -504,12 +555,11 @@ extension PlayerView {
             .padding()
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         .accessibilityIdentifier("player.moreMenu.sleepTimerRow")
         #if os(tvOS)
-        .background(moreMenuFocusedRow == .sleepTimer ? Color.gray.opacity(0.35) : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .playerMenuFocusHighlight(moreMenuFocusedRow == .sleepTimer)
         .focused($moreMenuFocusedRow, equals: .sleepTimer)
         #endif
         Divider()
@@ -540,12 +590,11 @@ extension PlayerView {
             .padding()
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         .accessibilityIdentifier("player.moreMenu.audioOnlyRow")
         #if os(tvOS)
-        .background(moreMenuFocusedRow == .audioOnly ? Color.gray.opacity(0.35) : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .playerMenuFocusHighlight(moreMenuFocusedRow == .audioOnly)
         .focused($moreMenuFocusedRow, equals: .audioOnly)
         #endif
         Divider()
@@ -576,12 +625,11 @@ extension PlayerView {
                 .padding()
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .playerMenuButtonStyle()
             .foregroundStyle(.primary)
             .accessibilityIdentifier("player.moreMenu.queueShuffleRow")
             #if os(tvOS)
-            .background(moreMenuFocusedRow == .queueShuffle ? Color.gray.opacity(0.35) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .playerMenuFocusHighlight(moreMenuFocusedRow == .queueShuffle)
             .focused($moreMenuFocusedRow, equals: .queueShuffle)
             #endif
             Divider()
@@ -605,7 +653,7 @@ extension PlayerView {
             .padding()
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         .disabled(downloadService.state.isActive)
         .accessibilityIdentifier("player.moreMenu.downloadButton")
@@ -632,12 +680,11 @@ extension PlayerView {
                 .padding()
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .playerMenuButtonStyle()
             .foregroundStyle(.primary)
             .accessibilityIdentifier("player.moreMenu.captionsRow")
             #if os(tvOS)
-            .background(moreMenuFocusedRow == .captions ? Color.gray.opacity(0.35) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .playerMenuFocusHighlight(moreMenuFocusedRow == .captions)
             .focused($moreMenuFocusedRow, equals: .captions)
             #endif
             Divider()
@@ -663,12 +710,11 @@ extension PlayerView {
                 .padding()
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .playerMenuButtonStyle()
             .foregroundStyle(.primary)
             .accessibilityIdentifier("player.moreMenu.audioTrackRow")
             #if os(tvOS)
-            .background(moreMenuFocusedRow == .audioTrack ? Color.gray.opacity(0.35) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .playerMenuFocusHighlight(moreMenuFocusedRow == .audioTrack)
             .focused($moreMenuFocusedRow, equals: .audioTrack)
             #endif
             Divider()
@@ -687,12 +733,11 @@ extension PlayerView {
                     .padding()
                     .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .playerMenuButtonStyle()
             .foregroundStyle(.primary)
             .accessibilityIdentifier("player.moreMenu.descriptionRow")
             #if os(tvOS)
-            .background(moreMenuFocusedRow == .description ? Color.gray.opacity(0.35) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .playerMenuFocusHighlight(moreMenuFocusedRow == .description)
             .focused($moreMenuFocusedRow, equals: .description)
             #endif
             Divider()
@@ -710,12 +755,11 @@ extension PlayerView {
                 .padding()
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         .accessibilityIdentifier("player.moreMenu.commentsRow")
         #if os(tvOS)
-        .background(moreMenuFocusedRow == .comments ? Color.gray.opacity(0.35) : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .playerMenuFocusHighlight(moreMenuFocusedRow == .comments)
         .focused($moreMenuFocusedRow, equals: .comments)
         #endif
         Divider()
@@ -738,12 +782,11 @@ extension PlayerView {
             .padding()
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         .accessibilityIdentifier("player.moreMenu.statsForNerds")
         #if os(tvOS)
-        .background(moreMenuFocusedRow == .statsForNerds ? Color.gray.opacity(0.35) : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .playerMenuFocusHighlight(moreMenuFocusedRow == .statsForNerds)
         .focused($moreMenuFocusedRow, equals: .statsForNerds)
         #endif
         Divider()
@@ -759,12 +802,11 @@ extension PlayerView {
                 .fontWeight(.semibold)
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .playerMenuButtonStyle()
         .foregroundStyle(.primary)
         .accessibilityIdentifier("player.moreMenu.cancel")
         #if os(tvOS)
-        .background(moreMenuFocusedRow == .cancel ? Color.gray.opacity(0.35) : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .playerMenuFocusHighlight(moreMenuFocusedRow == .cancel)
         .focused($moreMenuFocusedRow, equals: .cancel)
         #endif
     }
