@@ -147,7 +147,7 @@ struct HoldSpeedBadge: View {
         .foregroundStyle(.white)
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .liquidGlass(in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .allowsHitTesting(false)
     }
 }

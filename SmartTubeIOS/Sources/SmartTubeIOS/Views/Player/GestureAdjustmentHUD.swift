@@ -75,7 +75,7 @@ struct GestureAdjustmentHUD: View {
         .padding(.vertical, 16)
         .padding(.horizontal, 12)
         .frame(width: 56, height: 140)
-        .background(.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 14))
+        .liquidGlass(in: RoundedRectangle(cornerRadius: 14))
         .accessibilityIdentifier(
             info.kind == .brightness ? "tosPlayer.brightnessHUD" : "tosPlayer.volumeHUD"
         )

@@ -45,17 +45,13 @@ struct PlayerControlsOverlay: View {
     @Environment(\.dismiss) var dismiss
     @ViewBuilder
     var body: some View {
-        #if os(tvOS)
-        if #available(tvOS 26.0, *) {
+        if #available(tvOS 26.0, iOS 26.0, macOS 26.0, *) {
             GlassEffectContainer(spacing: 12) {
                 controlsContent
             }
         } else {
             controlsContent
         }
-        #else
-        controlsContent
-        #endif
     }
 
     private var controlsContent: some View {
@@ -88,8 +84,7 @@ struct PlayerControlsOverlay: View {
                         .font(.title2)
                         .foregroundStyle(.white)
                         .padding(12)
-                        .background(.black.opacity(0.4))
-                        .clipShape(Circle())
+                        .liquidGlass(in: Circle())
                 }
                 .accessibilityIdentifier("player.backButton")
                 #endif
@@ -157,8 +152,7 @@ struct PlayerControlsOverlay: View {
                             .font(.system(size: 18 * controlScale))
                             .foregroundStyle(.white)
                             .padding(8)
-                            .background(.black.opacity(0.4))
-                            .clipShape(Circle())
+                            .liquidGlass(in: Circle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("player.pipButton")
@@ -192,8 +186,7 @@ struct PlayerControlsOverlay: View {
                         .font(.system(size: 18 * controlScale))
                         .foregroundStyle(.white)
                         .padding(8)
-                        .background(.black.opacity(0.4))
-                        .clipShape(Circle())
+                        .liquidGlass(in: Circle())
                 }
                 .accessibilityIdentifier("player.moreButton")
                 .buttonStyle(.plain)
@@ -278,8 +271,7 @@ struct PlayerControlsOverlay: View {
                             .foregroundStyle(vm.hasPrevious && !vm.isLoading ? .white : .white.opacity(0.3))
                             #if os(iOS)
                         .padding(8)
-                        .background(.black.opacity(0.4))
-                        .clipShape(Circle())
+                        .liquidGlass(in: Circle())
                             #endif
                     }
                     .buttonStyle(.plain)
@@ -368,8 +360,7 @@ struct PlayerControlsOverlay: View {
                             .font(.system(size: 18 * controlScale))
                             .foregroundStyle(.white)
                             .padding(8)
-                            .background(.black.opacity(0.4))
-                            .clipShape(Circle())
+                            .liquidGlass(in: Circle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("player.landscapeLockButton")
@@ -383,8 +374,7 @@ struct PlayerControlsOverlay: View {
                             .font(.system(size: 18 * controlScale))
                             .foregroundStyle(store.settings.audioOnlyMode ? Color.accentColor : .white)
                             .padding(8)
-                            .background(.black.opacity(0.4))
-                            .clipShape(Circle())
+                            .liquidGlass(in: Circle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("player.audioOnlyButton")
@@ -414,8 +404,7 @@ struct PlayerControlsOverlay: View {
                             .foregroundStyle(vm.hasNext ? .white : .white.opacity(0.3))
                             #if os(iOS)
                         .padding(8)
-                        .background(.black.opacity(0.4))
-                        .clipShape(Circle())
+                        .liquidGlass(in: Circle())
                             #endif
                     }
                     .buttonStyle(.plain)

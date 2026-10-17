@@ -40,7 +40,7 @@ private struct ToastModifier: ViewModifier {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
-                .background(.black.opacity(0.72), in: Capsule())
+                .liquidGlass(in: Capsule())
                 .padding(.bottom, 32)
                 .transition(.opacity.combined(with: .scale(scale: 0.92, anchor: .bottom)))
                 .accessibilityIdentifier("player.toast")

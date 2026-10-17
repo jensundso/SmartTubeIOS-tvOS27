@@ -553,8 +553,7 @@ public struct TOSPlayerView: View {
                         .font(.title2)
                         .foregroundStyle(.white)
                         .padding(9)
-                        .background(.black.opacity(0.4))
-                        .clipShape(Circle())
+                        .liquidGlass(in: Circle())
                 }
                 .accessibilityIdentifier("tosPlayer.backButton")
 
@@ -576,8 +575,7 @@ public struct TOSPlayerView: View {
                         .font(.title2)
                         .foregroundStyle(.white)
                         .padding(9)
-                        .background(.black.opacity(0.4))
-                        .clipShape(Circle())
+                        .liquidGlass(in: Circle())
                 }
                 .accessibilityIdentifier("tosPlayer.landscapeLockButton")
 
@@ -631,8 +629,7 @@ public struct TOSPlayerView: View {
                 .font(.title2)
                 .foregroundStyle(.white)
                 .padding(9)
-                .background(.black.opacity(0.4))
-                .clipShape(Circle())
+                .liquidGlass(in: Circle())
         }
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.4)
@@ -687,7 +684,7 @@ public struct TOSPlayerView: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 11)
                 .padding(.vertical, 7)
-                .background(.ultraThinMaterial, in: Capsule())
+                .liquidGlass(in: Capsule())
         }
         .menuStyle(.borderlessButton)
         .fixedSize()
@@ -801,7 +798,7 @@ public struct TOSPlayerView: View {
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.white)
                 .padding(9)
-                .background(.ultraThinMaterial, in: Circle())
+                .liquidGlass(in: Circle())
         }
         .menuStyle(.borderlessButton)
         .fixedSize()
@@ -864,7 +861,7 @@ public struct TOSPlayerView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(.thinMaterial, in: Capsule())
+                        .liquidGlass(in: Capsule())
                 }
                 .buttonStyle(.plain)
             }
@@ -893,7 +890,7 @@ public struct TOSPlayerView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(.thinMaterial, in: Capsule())
+                        .liquidGlass(in: Capsule())
                 }
                 .buttonStyle(.plain)
             }
@@ -914,7 +911,7 @@ public struct TOSPlayerView: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.white)
                 .padding(8)
-                .background(.thinMaterial, in: Circle())
+                .liquidGlass(in: Circle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text("Report Incorrect Segment", bundle: .module))

@@ -811,3 +811,15 @@ extension PlayerView {
         #endif
     }
 }
+
+extension View {
+    /// Liquid Glass surface on iOS/macOS/tvOS 26+, material fallback before.
+    @ViewBuilder
+    func liquidGlass<S: Shape>(in shape: S) -> some View {
+        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+            self.glassEffect(.regular, in: shape)
+        } else {
+            self.background(.ultraThinMaterial, in: shape)
+        }
+    }
+}
